@@ -1,0 +1,34 @@
+<a name="top"></a>
+<h1>Policies & Procedures</h1>
+<p>
+<a href="{% url 'policy-create' %}">Create Policy</a>
+</p>
+{% if policy_list %}
+<ol type='I'>
+  {% for policy in policy_list %}
+    <li><a href="#{{policy.name|cut:" " }}">{{ policy.name }}</a> <small><a href="{% url 'policy-update' policy.id %}">Edit</a> <a href="{% url 'policy-delete' policy.id %}">Delete</a></small></li>
+      <ol>
+        {% for section in policy.sections.all %}
+          <li><a href="#{{section.name|cut:" " }}">{{ section.name }}</a></li>
+        {% endfor %}
+      </ol>
+  {% endfor %}
+</ol>
+
+{% for policy in policy_list %}
+<hr />
+<h1><a id="{{policy.name|cut:" " }}"></a>{{ policy.name }}</h1>
+<a href="{% url 'policy-update' policy.id %}">Edit</a> <a href="{% url 'policy-delete' policy.id %}">Delete</a>
+<p>{{ policy.detail| safe | linebreaksbr}}</p>
+<p>
+<a href="{% url 'section-create' policy.id %}">Create Section</a>
+</p>
+  {% for section in policy.sections.all %}
+    <h2><a id="{{section.name|cut:" " }}"></a>{{ section.name }}</h2>
+    <a href="{% url 'section-move' policy.id section.id %}">Move</a> <a href="{% url 'section-update' policy.id section.id %}">Edit</a> <a href="{% url 'section-delete' policy.id section.id %}">Delete</a>
+    <p>{{ section.detail| safe | linebreaksbr }}<br /><br /><a href="#top">Back to top</a></p>
+  {% endfor %}
+{% endfor %}
+{% else %}
+<p>There are currently no policies.</p>
+{% endif %}
