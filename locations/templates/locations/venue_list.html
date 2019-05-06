@@ -1,0 +1,51 @@
+<h1>Venues</h1>
+<p>
+<a href="{% url 'venue-create' %}">Create Venue</a>
+</p>
+<form method="get" novalidate>
+  {{ filter.form.state.label_tag }}
+  {{ filter.form.state }}
+  {{ filter.form.city.label_tag }}
+  {{ filter.form.city }}
+  <input type="submit" value="search">
+  <a href="{% url 'venue-list' %}">Reset</a> ({{ filter.qs|length }} of {{ count }})
+</form>
+  
+{% if filter.qs %}
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Address</th>
+      <th>City</th>
+      <th>State</th>
+      <th>Zip</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Website</th>
+      <th>Manager(s)</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for venue in filter.qs %}
+    <tr>
+      <td><a href="{% url 'venue-update' venue.id %}">{{ venue.name }}</a></td>
+      <td><a href="{{ venue.map_link }}">{{ venue.address }}{% if venue.additional_address %}, {{ venue.additional_address }}{% endif %}</a></td>
+      <td>{{ venue.city.name }}</td>
+      <td>{{ venue.state.name }}</td>
+      <td>{{ venue.zip }}</a></td>
+      <td>{{ venue.email}}</td>
+      <td>{{ venue.phone_number }}</td>
+      <td><a href="http://{{ venue.website }}">{{ venue.website }}</a></td>
+      <td>
+      {% for manager in venue.managers.all %}
+        <a href="#">{{ manager }}</a>{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>There are no venues.</p>
+{% endif %}

@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
     'policies.apps.PoliciesConfig',
+    'locations.apps.LocationsConfig',
+    'localflavor',
+    'phone_field',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
