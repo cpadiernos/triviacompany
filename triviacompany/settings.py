@@ -130,4 +130,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_REDIRECT_URL = '/policies/'
+
 AUTH_USER_MODEL = 'accounts.CustomUser'
