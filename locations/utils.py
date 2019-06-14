@@ -72,8 +72,11 @@ def find_region(value, dict=regions):
     
 def google_map_address(self):
    base = 'https://www.google.ca/maps/place/'
-   address = self.address.replace(" ", "+")
-   city = self.city.name
-   state = self.state.name
-   zip = self.zip.code
-   return (base + address + ",+" + city + ",+" + state + ",+" + zip)
+   try:
+       address = self.address.replace(" ", "+")
+       city = self.city.name
+       state = self.state.name
+       zip = self.zip.code
+       return (base + address + ",+" + city + ",+" + state + ",+" + zip)
+   except AttributeError:
+       return base

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'policies.apps.PoliciesConfig',
     'locations.apps.LocationsConfig',
+    'schedule.apps.ScheduleConfig',
     'localflavor',
     'phone_field',
     'django_filters',
@@ -124,12 +125,17 @@ USE_L10N = True
 
 USE_TZ = True
 
+TIME_INPUT_FORMATS = ['%I:%M %p',]
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
 
-LOGIN_REDIRECT_URL = '/policies/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'triviacompany/media')
+
+LOGIN_REDIRECT_URL = '/events/'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'

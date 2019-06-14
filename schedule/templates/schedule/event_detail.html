@@ -1,0 +1,21 @@
+<h1>{{event.venue.name }}</h1>
+
+<p>Address: {{event.venue.address}}, {% if event.venue.additional_address %} {{event.venue.additional_address}},{% endif %} {{event.venue.city.name}}, {{event.venue.state}}, {{event.venue.zip}}</p>
+<p>Venue website: <a href="https://{{event.venue.website}}">{{event.venue.website}}</a></p>
+<p>Regular Day: {{ event.day }}</p>
+<p>Regular Time: {{ event.time }}</p>
+<p>Regular Host: {{ event.host.first_name }} {{ event.host.last_name }}</p>   
+<p>1st Place Prize: {% if event.first_place_prize.isdigit %}${% endif %}{{ event.first_place_prize }}</p>
+<p>2nd Place Prize: {% if event.second_place_prize.isdigit %}${% endif %}{{ event.second_place_prize }}</p>
+<p>3rd Place Prize: {% if event.third_place_prize.isdigit %}${% endif %}{{ event.third_place_prize }}</p>
+<p>Additional Prize info: {{ event.additional_prize_info }}</p>
+
+{% if user.is_authenticated %}
+<p>AV Setup: {{ event.venue.av_setup }}</p>
+{% endif %}
+
+{% for image in event.images.all %}
+<p><img src="{{ image.image.url }}" alt=''></p>
+{% empty %}
+<p>Images coming soon!</p>    
+{% endfor %}

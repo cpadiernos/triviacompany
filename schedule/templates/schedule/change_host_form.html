@@ -1,0 +1,12 @@
+<h1>{{ heading }}</h1>
+<p>You are about to {{ action }} the following shift:</p>
+<p>{{ event_occurrence.day }}, {{ event_occurrence.date }}, at {{ event_occurrence.time}}</p>
+<p>{{ event_occurrence.event.venue.name }}</p>
+<p>{{ event_occurrence.event.venue.address }}</p>
+<p>{{ event_occurrence.event.venue.city.name }}, {{ event_occurrence.event.venue.state }} {{ event_occurrence.event.venue.zip }}
+<p>Are you sure?</p>
+<form action="" method="post" novalidate enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="{{ input_value }}">
+</form>

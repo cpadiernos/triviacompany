@@ -1,0 +1,63 @@
+<h1>Events</h1>
+
+<form method="get" novalidate>
+  {{ filter.form.event__venue__state.label_tag }}
+  {{ filter.form.event__venue__state }}
+  {{ filter.form.event__venue__city.label_tag }}
+  {{ filter.form.event__venue__city }}
+  {{ filter.form.day.label_tag }}
+  {{ filter.form.day }}
+  <input type="submit" value="Search">
+  <a href="{% url 'event-occurrence-list' %}">Reset</a>
+</form>
+
+{% if filter.qs %}
+
+<p>* indicates a day change or time change from the normal schedule. 
+While we try to stay up to date, changes from the venue may occur last minute.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Day</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Status</th>
+      <th>Venue</th>
+      <th>Address</th>
+      <th>City</th>
+      <th>State</th>
+      <th>Zip</th>
+      <th>Phone</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for event_occurrence in filter.qs %}
+    <tr>
+      <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.day }}</td>
+      <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.date }}</td>
+      <td>{% if event_occurrence.is_different_time %}*{% endif %}{{ event_occurrence.time}}</td>
+      <td>{{ event_occurrence.status }}</td>
+      <td>{{ event_occurrence.event.venue }}</td>
+      <td>
+        <a href="{{ event_occurrence.event.venue.map_link }}">
+          {{ event_occurrence.event.venue.address }}
+        </a>
+      </td>
+      <td>{{ event_occurrence.event.venue.city.name }}</td>
+      <td>{{ event_occurrence.event.venue.state.name }}</td>
+      <td>{{ event_occurrence.event.venue.zip.code }}</td>
+      <td>{{ event_occurrence.event.venue.phone_number }}</td>
+      <td><a href="{{event_occurrence.event.get_absolute_url}}">Details</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+
+<p>There are no events.</p>
+
+{% endif %}
