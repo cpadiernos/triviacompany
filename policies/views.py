@@ -25,7 +25,7 @@ class PolicyUpdate(UpdateView):
 class PolicyDelete(DeleteView):
     model = Policy
     context_object_name = 'policy'
-    template_name = 'policies/policy_confirm_delete.html'
+    template_name = 'policies/confirm_delete.html'
     success_url = reverse_lazy('policy-list')
 
 class SectionCreate(CreateView):
@@ -55,7 +55,7 @@ class SectionUpdate(UpdateView):
 class SectionDelete(DeleteView):
     model = Section
     context_object_name = 'section'
-    template_name = 'policies/section_confirm_delete.html'
+    template_name = 'policies/confirm_delete.html'
     pk_url_kwarg = 'section_pk'
     success_url = reverse_lazy('policy-list')
     

@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Trivia City - {{ heading|slice:":-1" }}{% endblock %}
+
+{% block content %}
 <h1>{{ heading }}</h1>
 <p>You are about to {{ action }} the following shift:</p>
 <p>{{ event_occurrence.day }}, {{ event_occurrence.date }}, at {{ event_occurrence.time}}</p>
@@ -7,6 +12,7 @@
 <p>Are you sure?</p>
 <form action="" method="post" novalidate enctype="multipart/form-data">
   {% csrf_token %}
-  {{ form.as_p }}
+  {% include 'includes/form.html' %}
   <input type="submit" value="{{ input_value }}">
 </form>
+{% endblock %}

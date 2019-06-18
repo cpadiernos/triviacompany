@@ -1,0 +1,29 @@
+.navbar-brand {
+  font-family: 'Archivo Black', sans-serif;
+}
+
+nav a{
+  color: black;
+}
+
+nav {
+  background-color: white;
+  opacity: 0.8;
+}
+
+.jumbotron-image {
+  background-image: url("../img/cartoon_city_banner.png");
+}
+
+.jumbotron {
+  height: 250px;
+}
+
+h1 {
+  font-size: 32px !important;
+}
+
+h2 {
+
+  font-size: 24px !important;
+}

@@ -1,16 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Trivia City - My Events{% endblock %}
+
+{% block content %}
 <h1>Events</h1>
 
-<a href="{% url 'event-occurrence-list-host' user.username %}">All</a>
-<a href="{% url 'event-occurrence-list-past-host' user.username %}">Past</a>
-<a href="{% url 'event-occurrence-list-future-host' user.username %}">Upcoming</a>
-<a href="{% url 'event-occurrence-list-available' %}">Available</a>
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    {% url 'event-occurrence-list-host' user as url %}
+    <a class="nav-link {% if request.path == url %} active {% endif %}" href="{{url}}">All</a>
+  </li>
+  <li class="nav-item">
+    {% url 'event-occurrence-list-past-host' user as url %}
+    <a class="nav-link {% if request.path == url %} active {% endif %}" href="{{url}}">Past</a>
+  </li>
+  <li class="nav-item">
+    {% url 'event-occurrence-list-future-host' user as url %}
+    <a class="nav-link {% if request.path == url %} active {% endif %}" href="{{url}}">Upcoming</a>
+  </li>
+  <li class="nav-item">
+    {% url 'event-occurrence-list-available' as url %}
+    <a class="nav-link {% if request.path == url %} active {% endif %}" href="{{url}}">Available</a>
+  </li>
+</ul>
 
 <p>
 {% if messages %}
   {% for message in messages %}
-  {{ message | safe }}
+  <div class="alert alert-info" role="alert">{{ message | safe }}</div>
   {% endfor %}
 {% endif %}
+
 </p>
 
 {% if event_occurrence_list %}
@@ -18,12 +38,10 @@
 <p>* indicates a day change or time change from the normal schedule. 
 While we try to stay up to date, changes from the venue may occur last minute.</p>
 
-<table>
+<table class="table">
   <thead>
     <tr>
-      {% if user.is_authenticated %}
       <th>Action</th>
-      {% endif %}
       <th>Day</th>
       <th>Date</th>
       <th>Time</th>
@@ -39,26 +57,24 @@ While we try to stay up to date, changes from the venue may occur last minute.</
   <tbody>
     {% for event_occurrence in event_occurrence_list %}
     <tr>
-      {% if user.is_authenticated %}
       <td>
       {% if event_occurrence.cancelled_ahead %}
       Cancelled for {{ event_occurrence.cancellation_reason }}
       {% elif user.username == event_occurrence.host.username and event_occurrence.can_be_edited %}
-      <a href="{% url 'event-occurrence-update' event_occurrence.pk %}">Edit Game Info</a>
+      <a href="{% url 'event-occurrence-update' event_occurrence.pk %}" class="btn btn-secondary">Edit Game Info</a>
       {% elif user.username == event_occurrence.host.username and event_occurrence.has_passed %}
-      <a href="{% url 'event-occurrence-update' event_occurrence.pk %}">Submit Game Info</a> {% if event_occurrence.is_late %}(LATE){% endif %}
+      <a href="{% url 'event-occurrence-update' event_occurrence.pk %}" class="btn btn-success">Submit Game Info {% if event_occurrence.is_late %}(LATE){% endif %}</a>
       {% elif event_occurrence.change_host and not event_occurrence.has_passed %}
-      <a href="{% url 'pick-up' event_occurrence.pk %}">Pick Up Shift</a>
+      <a href="{% url 'pick-up' event_occurrence.pk %}" class="btn btn-warning">Pick Up Shift</a>
       {% elif user.username != event_occurrence.event.host.username and not event_occurrence.change_host and not event_occurrence.has_passed %}
-      <a href="{% url 'request-off' event_occurrence.pk %}">*Request Day Off</a>
+      <a href="{% url 'request-off' event_occurrence.pk %}" class="btn btn-outline-danger">*Request Day Off</a>
       {% elif user.username == event_occurrence.host.username and not event_occurrence.change_host and not event_occurrence.has_passed %}
-      <a href="{% url 'request-off' event_occurrence.pk %}">Request Day Off</a>
+      <a href="{% url 'request-off' event_occurrence.pk %}" class="btn btn-outline-danger">Request Day Off</a>
       {% elif user.username != event_occurrence.host.username and not event_occurrence.change_host and event_occurrence.status == 'Game' %} 
       Covered by {{ event_occurrence.host.first_name }} {{ event_occurrence.host.last_name }}
       {% endif %}
       </td>
-      {% endif %}
-      <td>{{ event_occurrence.pk }}{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.day }}</td>
+      <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.day }}</td>
       <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.date }}</td>
       <td>{% if event_occurrence.is_different_time %}*{% endif %}{{ event_occurrence.time}}</td>
       <td>{{ event_occurrence.status }}</td>
@@ -74,5 +90,9 @@ While we try to stay up to date, changes from the venue may occur last minute.</
 </table>
 
 {% else %}
+
   <p>There are no events.</p>
+
 {% endif %}
+
+{% endblock %}
