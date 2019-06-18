@@ -1,0 +1,16 @@
+{% extends 'base_accounts.html' %}
+
+{% block title %}Trivia City - Logged out{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-4 col-md-6 col-sm-8">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">You've been logged out!</h5>
+          <a href="{% url 'login' %}" class="btn btn-secondary btn-block">Return to log in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

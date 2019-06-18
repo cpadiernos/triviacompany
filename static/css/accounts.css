@@ -1,0 +1,18 @@
+body {
+  background-image: url("../img/clouds.png");
+  background-color: #e9ecef;
+}
+
+.logo {
+  font-family: 'Archivo Black', sans-serif;
+  opacity: 0.8;
+}
+
+.logo a {
+  color: rgba(0,0,0,.9);
+}
+
+.logo a:hover,
+.logo a:active {
+  text-decoration: none;
+}

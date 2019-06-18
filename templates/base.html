@@ -12,6 +12,8 @@
     <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'js/popper.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    {% block stylesheet %}
+    {% endblock %}
     <style>
     #navbar-toggle-checkbox {
         display: none;
@@ -34,7 +36,7 @@
     </noscript>
   </head>
   <body>
-  
+  {% block body %}
   <noscript>
   <p>You have Javascript disabled. Your experience might be affected.</p>
   </noscript>
@@ -69,7 +71,7 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropDown">
               <li>
-                <a class="dropdown-item" href="">Log Out</a></li>
+                <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
               </li>
             </ul>
           </li>
@@ -87,7 +89,7 @@
           </li>
         </ul>
         <div class="ml-auto">
-          <a class="btn btn-outline-secondary" href="">Log In</a>
+          <a class="btn btn-outline-secondary" href="{% url 'login' %}">Log In</a>
           <a class="btn btn-primary" href="">Sign Up</a>
       {% endif %}
       </div>
@@ -98,5 +100,6 @@
       {% block content %}
       {% endblock %}
     </div>
+  {% endblock %}
   </body>
 </html>
