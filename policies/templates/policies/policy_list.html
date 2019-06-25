@@ -5,13 +5,15 @@
 {% block content %}
 <a name="top"></a>
 <h1>Policies & Procedures</h1>
+{% if user.is_regional_manager %}
 <p>
 <a href="{% url 'policy-create' %}">Create Policy</a>
 </p>
+{% endif %}
 {% if policy_list %}
 <ol type='I'>
   {% for policy in policy_list %}
-    <li><a href="#{{policy.name|cut:" " }}">{{ policy.name }}</a> - <small><a href="{% url 'policy-update' policy.id %}">Edit</a> | <a href="{% url 'policy-delete' policy.id %}">Delete</a></small></li>
+    <li><a href="#{{policy.name|cut:" " }}">{{ policy.name }}</a> {% if user.is_regional_manager %}- <small><a href="{% url 'policy-update' policy.id %}">Edit</a> | <a href="{% url 'policy-delete' policy.id %}">Delete</a></small></li>{% endif %}
       <ol>
         {% for section in policy.sections.all %}
           <li><a href="#{{section.name|cut:" " }}">{{ section.name }}</a></li>
@@ -23,14 +25,14 @@
 {% for policy in policy_list %}
 <hr />
 <h1><a id="{{policy.name|cut:" " }}"></a>{{ policy.name }}</h1>
-<a href="{% url 'policy-update' policy.id %}">Edit</a> | <a href="{% url 'policy-delete' policy.id %}">Delete</a>
+{% if user.is_regional_manager %}<a href="{% url 'policy-update' policy.id %}">Edit</a> | <a href="{% url 'policy-delete' policy.id %}">Delete</a>{% endif %}
 <p>{{ policy.detail| safe | linebreaksbr}}</p>
 <p>
-<a href="{% url 'section-create' policy.id %}">Create Section</a>
+{% if user.is_regional_manager %}<a href="{% url 'section-create' policy.id %}">Create Section</a>{% endif %}
 </p>
   {% for section in policy.sections.all %}
     <h2><a id="{{section.name|cut:" " }}"></a>{{ section.name }}</h2>
-    <a href="{% url 'section-move' policy.id section.id %}">Move</a> | <a href="{% url 'section-update' policy.id section.id %}">Edit</a> | <a href="{% url 'section-delete' policy.id section.id %}">Delete</a>
+    {% if user.is_regional_manager %}<a href="{% url 'section-move' policy.id section.id %}">Move</a> | <a href="{% url 'section-update' policy.id section.id %}">Edit</a> | <a href="{% url 'section-delete' policy.id section.id %}">Delete</a>{% endif %}
     <p>{{ section.detail| safe | linebreaksbr }}<br /><br /><a href="#top">Back to top</a></p>
   {% endfor %}
 {% endfor %}
