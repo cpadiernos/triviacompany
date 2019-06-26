@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Trivia City - Meet The Hosts{% endblock %}
+
+{% block content %}
+<h1 class="pb-2">Meet The Hosts</h1>
+
+{% for host_profile in host_profile_list %}
+<div class="container">
+  <div class="m-3 bg-light border d-flex flex-row {% cycle 'flex-row' 'flex-row-reverse'%}">
+    <div class="p-3 col-9">
+      <span class="font-weight-bold">{{host_profile.user.first_name}}</span>
+    <br />
+    {{host_profile.bio}}
+    </div>
+    <div class="p-3 col-3">
+    {% if host_profile.user.profile_image %}
+        <img class="img-fluid" src="{{ host_profile.user.profile_image.url }}"  alt="{{host_profile.user.first_name}}">
+    {% else %}
+      <img class="img-fluid" src="{% static 'img/profile_image_placeholder.jpg' %}"  alt="{{host_profile.user.first_name}}">
+    {% endif %}
+    </div>
+  </div>
+</div>
+{% empty %}
+  <p>There are no host bios.</p>
+{% endfor %}    
+
+{% endblock %}
