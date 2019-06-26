@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -9,6 +11,8 @@ from locations.models import Region, State, City, Zip
 from locations.utils import google_map_address
 
 from phone_field import PhoneField
+from PIL import Image, ExifTags, ImageOps
+from io import BytesIO
 
 class OverwriteStorage(FileSystemStorage):
 
@@ -46,6 +50,36 @@ class CustomUser(AbstractUser):
             and self.is_host is False
             and self.is_venue_manager is False):
             raise ValidationError(_('Please assign a role.'), code='required')
+
+    def save(self, *args, **kwargs):
+        if self.profile_image:
+            file_contents = self.profile_image.read()
+            file_object_in_ram_with_file_contents = BytesIO(file_contents)
+            image = Image.open(file_object_in_ram_with_file_contents)
+
+            for code, description in ExifTags.TAGS.items():
+                if description == 'Orientation':
+                    break
+
+            if image._getexif():
+                exif = image._getexif()
+                if code in exif:
+                    if exif[code] == 3:
+                        image = image.rotate(180, expand=True)
+                    elif exif[code] == 6:
+                        image = image.rotate(270, expand=True)
+                    elif exif[code] == 8:
+                        image = image.rotate(90, expand=True)
+
+            resized_and_cropped_image = ImageOps.fit(image, (300, 300), method=Image.ANTIALIAS)
+            file_object_in_ram_with_file_contents.close()
+            file_object_in_ram = BytesIO()
+            resized_and_cropped_image.save(file_object_in_ram, format='JPEG', quality=75)
+            self.profile_image = File(file_object_in_ram, self.profile_image.name)
+            super().save(*args, **kwargs)
+            file_object_in_ram.close()
+        else:
+            super().save(*args, **kwargs)
 
 class HostProfile(models.Model):
     user = models.OneToOneField(
