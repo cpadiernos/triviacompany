@@ -22,4 +22,5 @@ urlpatterns = [
         name='event-occurrence-list-past-host'),
     path('<str:username>/future/', views.EventOccurrenceListViewFutureHost.as_view(),
         name='event-occurrence-list-future-host'),
+    path('ajax/days/', views.load_days, name='day-dropdown-list'),
     ]

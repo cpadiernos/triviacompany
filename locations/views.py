@@ -1,10 +1,13 @@
+import datetime
+
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView
 
 from .filters import VenueFilter
 from .forms import VenueForm
-from .models import Venue
+from .models import Venue, City
 
 class VenueListView(generic.ListView):
     model = Venue
@@ -49,3 +52,12 @@ class VenueUpdate(UpdateView):
         form.instance.zip = form.cleaned_data['zip']
         return super().form_valid(form)
         
+def load_cities(request):
+    state_id = request.GET.get('state')
+    if state_id:
+        cities = City.objects.filter(state_id=state_id).order_by('name')
+    else:
+        cities = City.objects.filter(
+            venues__events__event_occurrences__isnull=False,
+            venues__events__event_occurrences__date__gte=datetime.date.today()).distinct()
+    return render(request, 'locations/city_dropdown_list.html', {'cities': cities})

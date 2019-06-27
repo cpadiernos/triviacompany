@@ -6,7 +6,7 @@
 {% block content %}
 <h1>Events</h1>
 
-<form method="get" novalidate>
+<form method="get" novalidate id="searchForm" city-dropdown-url="{% url 'city-dropdown-list' %}" day-dropdown-url="{% url 'day-dropdown-list' %}">
   <div class="container p-0">
     <div class="row">
       <div class="form-group col-sm-3">
@@ -78,5 +78,41 @@ While we try to stay up to date, changes from the venue may occur last minute.</
 <p>There are no events.</p>
 
 {% endif %}
+
+<script>
+document.getElementById('id_event__venue__state').onchange = loadValues;
+
+function loadValues() {
+  var stateId = this.value;
+  loadCities(stateId);
+  loadDays(stateId);
+}
+
+function loadCities(stateId) {
+  var url = document.querySelector('#searchForm').getAttribute('city-dropdown-url');
+  var stateId = stateId;
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById('id_event__venue__city').innerHTML = this.responseText
+      }
+    };
+  xhttp.open('GET', url+"?state="+stateId, true);
+  xhttp.send()
+};
+
+function loadDays(stateId) {
+  var url = document.querySelector('#searchForm').getAttribute('day-dropdown-url');
+  var stateId = stateId;
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById('id_day').innerHTML = this.responseText
+      }
+    };
+  xhttp.open('GET', url+"?state="+stateId, true);
+  xhttp.send()
+};
+</script>
 
 {% endblock %}

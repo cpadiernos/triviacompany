@@ -1,16 +1,17 @@
 import datetime
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.views.generic.edit import UpdateView
 from django.urls import reverse
 
 from .filters import EventOccurrenceFilter
 from .forms import ChangeHostForm, EventOccurrenceForm
-from .models import Event, EventOccurrence
+from .models import Event, EventOccurrence, Day
 
 class EventDetailView(generic.DetailView):
     model = Event
@@ -185,3 +186,13 @@ class PickUp(LoginRequiredMixin, UpdateView):
         return reverse(
             'event-occurrence-list-host',
             kwargs={'username': self.request.user.username })
+            
+def load_days(request):
+    state_id = request.GET.get('state')
+    if state_id:
+        days = Day.objects.filter(event_occurrences__event__venue__state_id=state_id).distinct()
+    else:
+        days = Day.objects.filter(
+            event_occurrences__isnull=False,
+            event_occurrences__date__gte=datetime.date.today()).distinct()
+    return render(request, 'schedule/day_dropdown_list.html', {'days': days})
