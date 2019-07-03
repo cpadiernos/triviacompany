@@ -144,3 +144,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'triviacompany/media')
 LOGIN_REDIRECT_URL = '/events/'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+LOGIN_URL = '/login/'

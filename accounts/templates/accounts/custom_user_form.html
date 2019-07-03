@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Trivia City - My account{% endblock %}
+
+{% block content %}
+
+<h1>My Account</h1>
+
+{% if messages %}
+  <div class="alert alert-success" role="alert">
+    {% for message in messages %}
+      {{ message | safe }}
+    {% endfor %}
+  </div>
+{% endif %}
+
+  <div class="container-fluid pb-3 mb-3 border">
+    <div class="row">
+      <div class="col-sm-9 pt-3">
+        <form method="post" novalidate enctype="multipart/form-data">
+          {% csrf_token %}
+          {% include 'includes/form.html' %}
+          <input type="submit" value="Save Changes"></input>
+        </form>
+      </div>
+      {% if user.profile_image %}
+      <div class="col-sm-3 text-center pt-3">
+        <img class="rounded img-fluid" src="{{ user.profile_image.url }}"  alt="{{ user.first_name }} profile image">
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  
+{% endblock %}

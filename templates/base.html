@@ -71,6 +71,9 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropDown">
               <li>
+                <a class="dropdown-item" href="{% url 'account-update' user.username %}">My Account</a></li>
+              </li>
+              <li>
                 <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
               </li>
             </ul>
