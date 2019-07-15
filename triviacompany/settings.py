@@ -146,3 +146,5 @@ LOGIN_REDIRECT_URL = '/events/'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 LOGIN_URL = '/login/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
