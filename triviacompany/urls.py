@@ -29,6 +29,7 @@ urlpatterns = [
     path('policies/', include('policies.urls')),
     path('venues/', include('locations.urls')),
     path('events/', include('schedule.urls')),
+    path('', include('accounting.urls')),
 ]
 
 urlpatterns += static(

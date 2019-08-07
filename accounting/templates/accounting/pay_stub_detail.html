@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Trivia City - {{ pay_stub.pay_date }} Pay Stub Detail{% endblock %}
+
+{% block content %}
+<h3>Details for Pay Stub:</h3>
+<h5>{{ pay_stub.pay_date }}</h5>
+<br>
+
+{% if pay_stub.salary_payments.all %}
+<h5>Salary Payments</h5>
+  <table class='table'>
+    <thead class="thead-light">
+      <tr class='d-flex'>
+        <th class="col-4">Week</th>
+        <th class="col-7">Role</th>
+        <th class="col-1">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for salary_payment in pay_stub.salary_payments.all %}
+      <tr class='d-flex'>
+        <td class="col-4">{{ salary_payment.week_start }} - {{ salary_payment.week_end }}</td>
+        <td class="col-7">-</td>
+        <td class="col-1">${{ salary_payment.gross_amount }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+<br>
+{% endif %}
+
+{% if pay_stub.event_occurrence_payments.all %}
+<h5>Event Payments</h5>
+  <table class='table'>
+    <thead class="thead-light">
+      <tr class='d-flex'>
+        <th class="col-2">Submission Date</th>
+        <th class="col-2">Event Date</th>
+        <th class="col-4">Event</th>
+        <th class="col-3">Number of Teams</th>
+        <th class="col-1">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for event_occurrence_payment in pay_stub.event_occurrence_payments.all %}
+      <tr class='d-flex'>
+        <td class="col-2">{{ event_occurrence_payment.submission_date }}</td>
+        <td class="col-2">{{ event_occurrence_payment.event_occurrence.date }}</td>
+        <td class="col-4">{{ event_occurrence_payment.event_occurrence.event.day }}, {{ event_occurrence_payment.event_occurrence.event.time }} at {{ event_occurrence_payment.event_occurrence.event.venue }}</td>
+        <td class="col-3">{{ event_occurrence_payment.event_occurrence.number_of_teams }}</td>
+        <td class="col-1">${{ event_occurrence_payment.gross_amount }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</br>
+{% endif %}
+
+{% if pay_stub.reimbursements.all %}
+<h5>Reimbursement</h5>
+  <table class='table'>
+    <thead class="thead-light">
+      <tr class='d-flex'>
+        <th class="col-2">Submission Date</th>
+        <th class="col-2">Purchase Date</th>
+        <th class="col-3">Category</th>
+        <th class="col-4">Description</th>
+        <th class="col-1">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for reimbursement in pay_stub.reimbursements.all %}
+      <tr class='d-flex'>
+        <td class="col-2">{{ reimbursement.submission_date }}</td>
+        <td class="col-2">{{ reimbursement.purchase_date }}</td>
+        <td class="col-3">{{ reimbursement.get_category_display }}</td>
+        <td class="col-4">{{ reimbursement.description }}</td>
+        <td class="col-1">${{ reimbursement.amount }}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+{% endif %}
+
+{% endblock %}

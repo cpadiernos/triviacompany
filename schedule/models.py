@@ -1,8 +1,9 @@
 import calendar
 import datetime
-from django.conf import settings
 import os
 
+from django.apps import apps
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.core.files.storage import FileSystemStorage
@@ -14,8 +15,6 @@ from locations.models import Venue
 
 from PIL import Image, ExifTags
 from io import BytesIO
-
-from django.conf import settings
 
 class OverwriteStorage(FileSystemStorage):
 
@@ -279,7 +278,10 @@ class EventOccurrence(models.Model):
 
     @property
     def is_complete(self):
-        if self.status == 'Game' and self.time_started and self.time_ended:
+        if (self.status == 'Game'
+                and self.time_started
+                and self.time_ended
+                and self.number_of_teams):
             return True
         elif self.status == 'No Game' and self.cancellation_reason:
             return True
@@ -314,6 +316,25 @@ class EventOccurrence(models.Model):
             return 'Not applicable'
     display_game_length.short_description = 'Game Length'
 
+    def save(self, *args, **kwargs):
+        super(EventOccurrence, self).save(*args, **kwargs)
+        EventOccurrencePayment = apps.get_model(
+            'accounting', 'EventOccurrencePayment')
+        if self.is_complete and not self.cancelled_ahead:
+            payment, created = EventOccurrencePayment.objects.get_or_create(
+                event_occurrence=self)
+            payment.save()
+        elif not self.is_complete or self.cancelled_ahead:
+            if (EventOccurrencePayment
+                    .objects
+                    .filter(event_occurrence=self)
+                    .exists()):
+                false_payment = EventOccurrencePayment.objects.get(
+                    event_occurrence=self)
+                pay_stub = false_payment.pay_stub
+                false_payment.delete()
+                pay_stub.save()
+
     def clean(self):
         if self.date:
             compare_day_and_date(self, self.day, self.date, 'date')
@@ -329,3 +350,13 @@ class EventOccurrence(models.Model):
             raise ValidationError(
                 _('You have a cancellation reason when there was a game. '
                 'Please correct.'), code='invalid')
+        required_together = [self.time_started, self.time_ended, self.number_of_teams]
+        if any(required_together) and not all(required_together):
+            raise ValidationError({
+                'time_started': ValidationError(
+                    _('Required together.'), code='required_together'),
+                'time_ended': ValidationError(
+                    _('Required together.'), code='required_together'),
+                'number_of_teams': ValidationError(
+                    _('Required together.'), code='required_together'),
+                 })

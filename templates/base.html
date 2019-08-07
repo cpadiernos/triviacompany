@@ -12,6 +12,9 @@
     <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'js/popper.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <link  rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     {% block stylesheet %}
     {% endblock %}
     <style>
@@ -62,6 +65,17 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'policy-list' %}">Policies & Procedures</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a  href="" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" id="payDropDown" aria-haspopup="true" aria-expanded="false">Pay</a>
+            <ul class="dropdown-menu" aria-labelledby="payDropDown">
+              <li>
+                <a class="dropdown-item" href="{% url 'pay-stub-list-current-user' user.username %}">Pay Stubs</a></li>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'reimbursement-list-user' user.username %}">Reimbursements</a></li>
+              </li>
+            </ul>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">

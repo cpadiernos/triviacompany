@@ -545,17 +545,6 @@ class EventOccurrenceModelTest(TestCase):
         shutil.rmtree('temp_event_occurrence_files')
         super().tearDownClass()
 
-    def test_labels_are_correct(self):
-        fields = [
-            'ID', 'event', 'day', 'time', 'date',
-            'host', 'change host', 'status', 'cancellation reason',
-            'cancelled ahead', 'time started', 'time ended',
-            'number of teams', 'scoresheet', 'notes'
-            ]
-        event_occurrence = EventOccurrence.objects.get(pk=1)
-        for counter, field in enumerate(event_occurrence._meta.get_fields()):
-            self.assertEqual(field.verbose_name, fields[counter])
-            
     def test_event_label(self):
         event_occurrence = EventOccurrence.objects.get(pk=1)
         field_label = event_occurrence._meta.get_field('event').verbose_name
@@ -811,6 +800,7 @@ class EventOccurrenceModelTest(TestCase):
         event_occurrence.status = 'Game'
         event_occurrence.time_started = datetime.time(20,15)
         event_occurrence.time_ended = datetime.time(22,15)
+        event_occurrence.number_of_teams = 5
         self.assertTrue(event_occurrence.is_complete)
 
     def test_is_complete_game_with_incomplete_data_is_false(self):
@@ -854,6 +844,7 @@ class EventOccurrenceModelTest(TestCase):
         event_occurrence.status = 'Game'
         event_occurrence.time_started = datetime.time(20,15)
         event_occurrence.time_ended = datetime.time(22,15)
+        event_occurrence.number_of_teams = 5
         self.assertTrue(event_occurrence.can_be_edited)
         
     def test_can_be_edited_true_no_game(self):

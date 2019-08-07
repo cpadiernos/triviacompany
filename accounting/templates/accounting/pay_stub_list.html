@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Trivia City - Pay Stubs{% endblock %}
+
+{% block content %}
+<h1>Pay Stubs</h1>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    {% url 'pay-stub-list-current-user' user.username as url %}
+      <a class="nav-link {% if request.path == url %} active {% endif %}" href="{{url}}">Current</a>
+  </li>
+  <li class="nav-item">
+    {% url 'pay-stub-list-past-user' user.username as url %}
+      <a class="nav-link {% if request.path == url %} active {% endif %}" href="{{url}}">Past</a>
+  </li>
+</ul>
+
+{% if pay_stub_list %}
+  <table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th>Pay Date</th>
+        <th>Gross Amount</th>
+        <th>Reimbursement Amount</th>
+        <th>Paid</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for pay_stub in pay_stub_list %}
+      <tr>
+        <td>{{ pay_stub.pay_date }}</td>
+        <td>${{ pay_stub.total_gross_amount }}</td>
+        <td>{% if pay_stub.total_reimbursement_amount %}${{ pay_stub.total_reimbursement_amount }}{% else %}-{% endif %}</td>
+        <td></i>{% if pay_stub.paid %}<i class="fa fa-check"></i>{% else %}{% endif %}</td>
+        <td><a href="{{ pay_stub.get_absolute_url }}">Details</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+  <p class="p-3">You have no paystubs for this period.</p>
+{% endif %}
+{% endblock %}
