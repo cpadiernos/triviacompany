@@ -4,7 +4,8 @@ import datetime
 from django.test import TestCase
 from django.urls import reverse, resolve
 
-from accounts.models import CustomUser
+from accounting.models import EventOccurrencePayment
+from accounts.models import CustomUser, HostProfile
 from locations.models import City, State, Zip, Venue
 from schedule.filters import EventOccurrenceFilter
 from schedule.forms import EventOccurrenceForm, ChangeHostForm
@@ -19,7 +20,9 @@ from schedule.views import (
     EventOccurrenceUpdate,
     PickUp,
     RequestOff,
+    EventOccurrenceDetail,
 )
+
 
 class EventDetailViewTests(TestCase):
     def setUp(self):
@@ -29,7 +32,7 @@ class EventDetailViewTests(TestCase):
         event = Event.objects.create(venue=venue)
 
     def test_events_number_url_maps_to_event_detail_name(self):
-        url = '/events/1/'
+        url = '/event-details/1/'
         reversed_name = reverse('event-detail', kwargs={'pk': 1})
         self.assertEqual(url, reversed_name)
         
@@ -487,6 +490,121 @@ class EventOccurrenceListAvailableViewTests(TestCase):
         event_detail_url = reverse('event-detail', kwargs={'pk': 1})
         self.assertContains(response, 'href="{0}"'.format(event_detail_url))
         
+class EventOccurrenceDetailViewTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        user = CustomUser.objects.create_user(
+            username='carol', password='Ilovespaghetti')
+        host_profile = HostProfile.objects.create(
+            user = user,
+            base_teams=5, base_rate=50,
+            incremental_teams=1, incremental_rate=1)
+        day = Day.objects.create(day=datetime.date.today().weekday())
+        second_before_now = (datetime.datetime.now() - datetime.timedelta(seconds=1)).time()
+        time = Time.objects.create(time=second_before_now)
+        event = Event.objects.create(
+            day=day,
+            time=time,
+            start_date=datetime.date.today(),
+            end_date=datetime.date.today() + datetime.timedelta(days=28))
+        event_occurrence = EventOccurrence.objects.create(
+            event=event,
+            host=user,
+            date=datetime.date.today(),
+            time=time,
+            status='Game',
+            time_started=datetime.time(20,30),
+            time_ended=datetime.time(22,30),
+            number_of_teams=5)
+
+    def test_events_number_url_maps_to_event_occurrence_detail_name(self):
+        url = '/events/1/'
+        reversed_name = reverse('event-occurrence-detail', kwargs={'pk': 1})
+        self.assertEqual(url, reversed_name)
+
+    def test_reverse_event_occurrence_detail_name_resolves_to_event_occurrence_detail_view(self):
+        view = resolve(reverse('event-occurrence-detail', kwargs={'pk': 1}))
+        self.assertEqual(view.func.view_class, EventOccurrenceDetail)
+
+    def test_reverse_event_occurrence_detail_name_success_status_code_if_logged_in_and_paid(self):
+        event_occurrence = EventOccurrence.objects.get(pk=1)
+        event_pay_stub = event_occurrence.event_occurrence_payments.first().pay_stub
+        event_pay_stub.paid = True
+        event_pay_stub.save()
+        login = self.client.login(username='carol', password='Ilovespaghetti')
+        url = reverse('event-occurrence-detail', kwargs={'pk': 1})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_reverse_event_occurrence_detail_name_redirects_to_accounts_login_page_if_not_logged_in(self):
+        url = reverse('event-occurrence-detail', kwargs={'pk': 1})
+        login_url = reverse('login')
+        response = self.client.get(url)
+        self.assertRedirects(response, '{0}?next={1}'.format(login_url, url))
+
+    def test_reverse_event_occurrence_detail_name_redirects_to_current_page_after_logging_in_and_paid(self):
+        event_occurrence = EventOccurrence.objects.get(pk=1)
+        event_pay_stub = event_occurrence.event_occurrence_payments.first().pay_stub
+        event_pay_stub.paid = True
+        event_pay_stub.save()
+        url = reverse('event-occurrence-detail', kwargs={'pk': 1})
+        response_before_login = self.client.get(url)
+        login_url = response_before_login.url
+        response_after_login = self.client.post(login_url, {'username': 'carol', 'password': 'Ilovespaghetti'})
+        self.assertRedirects(response_after_login, url)
+
+    def test_reverse_event_occurrence_detail_name_uses_correct_template(self):
+        event_occurrence = EventOccurrence.objects.get(pk=1)
+        event_pay_stub = event_occurrence.event_occurrence_payments.first().pay_stub
+        event_pay_stub.paid = True
+        event_pay_stub.save()
+        login = self.client.login(username='carol', password='Ilovespaghetti')
+        url = reverse('event-occurrence-detail', kwargs={'pk': 1})
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'schedule/event_occurrence_form.html')
+
+    def test_reverse_event_occurrence_detail_name_not_found_status_code_if_pay_stub_does_not_exist(self):
+        login = self.client.login(username='carol', password='Ilovespaghetti')
+        url = reverse('event-occurrence-detail', kwargs={'pk': 99})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_reverse_event_occurrence_detail_name_redirects_to_event_occurrence_update_view_if_event_occurrence_payment_does_not_exist(self):
+        event_occurrence = EventOccurrence.objects.get(pk=1)
+        event_payments = event_occurrence.event_occurrence_payments.all()
+        event_payments.update(event_occurrence=None)
+        login = self.client.login(username='carol', password='Ilovespaghetti')
+        url = reverse('event-occurrence-detail', kwargs={'pk': 1})
+        response = self.client.get(url)
+        redirect_url = reverse('event-occurrence-update', kwargs={'pk': 1})
+        self.assertRedirects(response, redirect_url)
+
+    def test_reverse_event_occurrence_detail_name_redirects_to_event_occurrence_update_view_if_event_occurrence_payment_is_not_paid(self):
+        login = self.client.login(username='carol', password='Ilovespaghetti')
+        url = reverse('event-occurrence-detail', kwargs={'pk': 1})
+        response = self.client.get(url)
+        redirect_url = reverse('event-occurrence-update', kwargs={'pk': 1})
+        self.assertRedirects(response, redirect_url)
+
+    def test_reverse_event_occurrence_detail_name_redirects_to_event_occurrence_update_view_if_event_occurrence_payment_is_not_users_event(self):
+        user = CustomUser.objects.create_user(
+            username='matt', password='Ilovemeatballs')
+        ogin = self.client.login(username='matt', password='Ilovemeatballs')
+        url = reverse('event-occurrence-detail', kwargs={'pk': 1})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_reverse_event_occurrence_detail_name_contains_event_occurrence_form(self):
+        event_occurrence = EventOccurrence.objects.get(pk=1)
+        event_pay_stub = event_occurrence.event_occurrence_payments.first().pay_stub
+        event_pay_stub.paid = True
+        event_pay_stub.save()
+        login = self.client.login(username='carol', password='Ilovespaghetti')
+        url = reverse('event-occurrence-detail', kwargs={'pk': 1})
+        response = self.client.get(url)
+        form = response.context.get('form')
+        self.assertIsInstance(form, EventOccurrenceForm)
+
 class EventOccurrenceUpdateViewTests(TestCase):
     def setUp(self):
         today = datetime.date.today()
@@ -497,7 +615,10 @@ class EventOccurrenceUpdateViewTests(TestCase):
             username='carol', password='Ilovespaghetti')
             
         venue = Venue.objects.create(name='The Meatballery')
-        event = Event.objects.create(venue=venue)
+        event = Event.objects.create(
+            venue=venue,
+            start_date=today,
+            end_date=today + datetime.timedelta(days=7))
         occurrence = EventOccurrence.objects.create(
             host=host,
             event=event,
@@ -629,7 +750,30 @@ class EventOccurrenceUpdateViewTests(TestCase):
         login_url = response_before_login.url
         response_after_login = self.client.post(login_url, {'username': 'carol', 'password': 'Ilovespaghetti'})
         self.assertRedirects(response_after_login, url)
+
+    def test_reverse_event_occurrence_update_name_includes_message_if_event_has_already_been_paid(self):
+        second_before_now = (datetime.datetime.now() - datetime.timedelta(seconds=1)).time()
+        time = Time.objects.create(time=second_before_now)
+
+        occurrence = EventOccurrence.objects.get(pk=1)
+        occurrence.time = time
+        occurrence.status = 'Game'
+        occurrence.time_started = datetime.time(20,30)
+        occurrence.time_ended = datetime.time(22,30)
+        occurrence.number_of_teams = 5
+        occurrence.save()
+        event_payment = occurrence.event_occurrence_payments.first()
+        pay_stub = event_payment.pay_stub
+        pay_stub.paid = True
+        pay_stub.save()
         
+        login = self.client.login(username='carol', password='Ilovespaghetti')
+        url = reverse('event-occurrence-update', kwargs={'pk': 1})
+        response = self.client.get(url)
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'This event has already been paid.')
+
     def test_reverse_event_occurrence_update_name_contains_event_occurrence_update_form(self):
         second_before_now = (datetime.datetime.now() - datetime.timedelta(seconds=1)).time()
         time = Time.objects.create(time=second_before_now)

@@ -5,9 +5,23 @@
 
 {% block content %}
 <h1>Game Info Submission Form</h1>
+
+{% if messages %}
+<div class="alert alert-info" role="alert">
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if event_occurrence.event_occurrence_payments.first.paid %}
+  {% include 'includes/form_readonly.html' %}
+{% else %}
 <form action="" method="post" novalidate enctype="multipart/form-data">
   {% csrf_token %}
   {% include 'includes/form.html' %}
   <input type="submit" value="Submit">
 </form>
+{% endif %}
+
 {% endblock %}

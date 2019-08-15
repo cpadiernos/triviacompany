@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.views import generic
 from django.views.generic.edit import UpdateView
 from django.urls import reverse
@@ -89,10 +89,33 @@ class EventOccurrenceListViewFutureHost(LoginRequiredMixin, EventOccurrenceListV
             return event_occurrence_list_host
         else:
             raise Http404
+
+class EventOccurrenceDetail(LoginRequiredMixin, generic.DetailView):
+    model = EventOccurrence
+    context_object_name = 'event_occurrence'
+    template_name = 'schedule/event_occurrence_form.html'
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        object = get_object_or_404(EventOccurrence, pk=pk)
+        if (object.event_occurrence_payments.exists()
+                and object.event_occurrence_payments.first().paid
+                and object.host == self.request.user):
+            response = super().get(request, *args, **kwargs)
+            return response
+        else:
+            return redirect(
+                reverse('event-occurrence-update', kwargs={'pk': pk}))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = EventOccurrenceForm(instance=self.object)
+        return context
         
 class EventOccurrenceUpdate(LoginRequiredMixin, UpdateView):
     model = EventOccurrence
     form_class = EventOccurrenceForm
+    context_object_name = 'event_occurrence'
     template_name = 'schedule/event_occurrence_form.html'
 
     def get_object(self, queryset=None):
@@ -105,7 +128,16 @@ class EventOccurrenceUpdate(LoginRequiredMixin, UpdateView):
             return event_occurrence
         else:
             raise Http404
-            
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        event_occurrence_pk = self.kwargs['pk']
+        event_occurrence = EventOccurrence.objects.get(pk=event_occurrence_pk)
+        event_payment = event_occurrence.event_occurrence_payments.first()
+        if event_payment and event_payment.paid:
+            messages.info(self.request, "This event has already been paid.")
+        return context
+
     def get_success_url(self):
         return reverse(
             'event-occurrence-list-host',

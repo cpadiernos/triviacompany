@@ -1,0 +1,6 @@
+{% for field in form.visible_fields %}
+  {% if field.value %}
+  {{ field.label_tag }}
+  <div class="mx-3 mb-3">{{ field.value }}</div>
+  {% endif %}
+{% endfor %}
