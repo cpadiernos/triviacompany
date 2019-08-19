@@ -25,6 +25,7 @@
 
 <script>
 document.getElementById('id_status').onchange = adjustConditionals
+
 function adjustConditionals() {
   if (document.getElementById("id_status").value == 'No Game') {
     document.getElementById("id_cancellation_reason").parentElement.style.display = "block";
@@ -41,6 +42,8 @@ function adjustConditionals() {
   }
 }
 window.onload = adjustConditionals
+$("#id_time_started").clockpicker({donetext: 'Set Time', twelvehour: true});
+$("#id_time_ended").clockpicker({donetext: 'Set Time', twelvehour: true});
 </script>
 
 {% endblock %}

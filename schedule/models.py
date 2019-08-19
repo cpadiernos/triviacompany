@@ -243,10 +243,10 @@ class EventOccurrence(models.Model):
     cancelled_ahead = models.BooleanField('cancelled ahead', default=False)
     time_started = models.TimeField(
         null=True, blank=True,
-        help_text='ex. 08:10 PM. Only required if "Game" was chosen.')
+        help_text='ex. 08:10PM. Only required if "Game" was chosen.')
     time_ended = models.TimeField(
         null=True, blank=True,
-        help_text='ex. 10:05 PM. Only required if "Game" was chosen.')
+        help_text='ex. 10:05PM. Only required if "Game" was chosen.')
     number_of_teams = models.PositiveIntegerField(
         null=True, blank=True, help_text='Only required if "Game" was chosen.')
     scoresheet = models.FileField(

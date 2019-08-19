@@ -703,7 +703,7 @@ class EventOccurrenceModelTest(TestCase):
     def test_time_started_help_text(self):
         event_occurrence = EventOccurrence.objects.get(pk=1)
         help_text = event_occurrence._meta.get_field('time_started').help_text
-        self.assertEqual(help_text, 'ex. 08:10 PM. Only required if "Game" was chosen.')
+        self.assertEqual(help_text, 'ex. 08:10PM. Only required if "Game" was chosen.')
 
     def test_time_ended_label(self):
         event_occurrence = EventOccurrence.objects.get(pk=1)
@@ -713,7 +713,7 @@ class EventOccurrenceModelTest(TestCase):
     def test_time_ended_help_text(self):
         event_occurrence = EventOccurrence.objects.get(pk=1)
         help_text = event_occurrence._meta.get_field('time_ended').help_text
-        self.assertEqual(help_text, 'ex. 10:05 PM. Only required if "Game" was chosen.')
+        self.assertEqual(help_text, 'ex. 10:05PM. Only required if "Game" was chosen.')
 
     def test_number_of_teams_label(self):
         event_occurrence = EventOccurrence.objects.get(pk=1)
