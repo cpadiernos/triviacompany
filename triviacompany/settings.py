@@ -141,7 +141,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'triviacompany/media')
 
-LOGIN_REDIRECT_URL = '/events/'
+LOGIN_REDIRECT_URL = '/portal-redirect/'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 

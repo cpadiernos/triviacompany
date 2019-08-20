@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
 
-from triviacompany.views import about, how_to_play
+from triviacompany.views import about, how_to_play, portal_redirect
+from accounts.models import CustomUser
 
 class AboutViewTests(TestCase):
 
@@ -44,3 +45,33 @@ class HowToPlayViewTests(TestCase):
         url = reverse('how-to-play')
         response = self.client.get(url)
         self.assertTemplateUsed(response, 'how_to_play.html')
+
+class PortalRedirectViewTests(TestCase):
+
+    def test_portal_redirect_url_maps_to_portal_redirect_name(self):
+        url = '/portal-redirect/'
+        reversed_name = reverse('portal-redirect')
+        self.assertEqual(url, reversed_name)
+
+    def test_reverse_portal_redirect_name_resolves_to_portal_redirect_view(self):
+        view = resolve(reverse('portal-redirect'))
+        self.assertEqual(view.func, portal_redirect)
+
+    def test_reverse_portal_redirect_name_redirects_to_host_events_page_if_logged_in_as_host(self):
+        host = CustomUser.objects.create_user(
+            username='carol', password='Ilovespaghetti',
+            is_host=True)
+        login = self.client.login(username='carol', password='Ilovespaghetti')
+        url = reverse('portal-redirect')
+        response = self.client.get(url)
+        redirect_url = reverse('event-occurrence-list-host', kwargs={'username': 'carol'})
+        self.assertRedirects(response, redirect_url)
+
+    def test_reverse_portal_redirect_name_redirects_to_public_events_page_if_logged_in_as_other_than_host(self):
+        host = CustomUser.objects.create_user(
+            username='carol', password='Ilovespaghetti')
+        login = self.client.login(username='carol', password='Ilovespaghetti')
+        url = reverse('portal-redirect')
+        response = self.client.get(url)
+        redirect_url = reverse('event-occurrence-list')
+        self.assertRedirects(response, redirect_url)

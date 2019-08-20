@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('about/', views.about, name='about'),
     path('how-to-play/', views.how_to_play, name='how-to-play'),
+    path('portal-redirect/', views.portal_redirect, name='portal-redirect'),
     path('', include('accounts.urls')),
     path('', include('django.contrib.auth.urls')),
     path('policies/', include('policies.urls')),
