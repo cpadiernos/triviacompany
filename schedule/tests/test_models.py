@@ -11,7 +11,7 @@ from django.urls import reverse
 
 from accounts.models import CustomUser
 from locations.models import Venue
-from schedule.models import Day, Time, Event, EventImage, EventOccurrence
+from schedule.models import Day, Time, Event, EventImage, EventOccurrence, find_closest_date
 
 from PIL import Image
 from io import BytesIO
@@ -434,6 +434,155 @@ class EventModelTest(TestCase):
         event.end_date = yesterday
         event.full_clean()
         self.assertEqual(event.status, 'T')
+
+    def test_generate_event_occurrences_with_no_start_date_does_not_generate_occurrences(self):
+        today = datetime.date.today()
+        event = Event.objects.get(pk=1)
+        event.start_date = None
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        self.assertEqual(generated, 0)
+
+    def test_generate_event_occurrences_with_start_date_same_as_current_date_generates_starting_next_week(self):
+        today = datetime.date.today()
+        event = Event.objects.get(pk=1)
+        event.day, created = Day.objects.get_or_create(day=today.weekday())
+        event.start_date = today
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        first_occurrence = event.event_occurrences.first()
+        next_week = today + datetime.timedelta(weeks=1)
+        self.assertEqual(first_occurrence.date, next_week)
+
+    def test_generate_event_occurrences_with_start_date_in_past_generates_only_future_dates(self):
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        event = Event.objects.get(pk=1)
+        event.day, created = Day.objects.get_or_create(day=tomorrow.weekday())
+        event.start_date = tomorrow - datetime.timedelta(weeks=4)
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        occurrence_dates = [occ.date for occ in EventOccurrence.objects.all()]
+        self.assertFalse(event.start_date in occurrence_dates)
+        self.assertTrue(tomorrow in occurrence_dates)
+
+    def test_generate_event_occurrences_with_start_date_in_future_only_generates_starting_on_future_date(self):
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        event = Event.objects.get(pk=1)
+        event.day, created = Day.objects.get_or_create(day=tomorrow.weekday())
+        event.start_date = tomorrow + datetime.timedelta(weeks=4)
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        occurrence_dates = [occ.date for occ in EventOccurrence.objects.all()]
+        self.assertTrue(event.start_date in occurrence_dates)
+        self.assertFalse(tomorrow in occurrence_dates)
+
+    def test_generate_event_occurrences_with_past_event_end_date_does_not_generate_occurrences(self):
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        event = Event.objects.get(pk=1)
+        event.day, created = Day.objects.get_or_create(day=tomorrow.weekday())
+        event.start_date = tomorrow - datetime.timedelta(weeks=5)
+        event.end_date = tomorrow - datetime.timedelta(weeks=2)
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        self.assertEqual(generated, 0)
+
+    def test_generate_event_occurrences_with_no_event_end_date_generates_up_to_eight_weeks(self):
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        event = Event.objects.get(pk=1)
+        event.day, created = Day.objects.get_or_create(day=yesterday.weekday())
+        event.start_date = yesterday
+        event.end_date = None
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        self.assertEqual(generated, 8)
+
+    def test_generate_event_occurrences_with_future_event_end_date_generates_only_up_to_date(self):
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        event = Event.objects.get(pk=1)
+        event.day, created = Day.objects.get_or_create(day=yesterday.weekday())
+        event.start_date = yesterday
+        two_weeks_out = yesterday + datetime.timedelta(weeks=2)
+        event.end_date = two_weeks_out
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        occurrence_dates = [occ.date for occ in EventOccurrence.objects.all()]
+        beyond_end = two_weeks_out + datetime.timedelta(weeks=1)
+        self.assertTrue(two_weeks_out in occurrence_dates)
+        self.assertFalse(beyond_end in occurrence_dates)
+
+    def test_generate_event_occurrences_with_same_event_end_date_generates_only_end_date(self):
+        two_weeks_ago = datetime.date.today() - datetime.timedelta(weeks=2)
+        event = Event.objects.get(pk=1)
+        event.day, created = Day.objects.get_or_create(day=two_weeks_ago.weekday())
+        event.start_date = two_weeks_ago
+        today = datetime.date.today()
+        event.end_date = today
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        occurrence_dates = [occ.date for occ in EventOccurrence.objects.all()]
+        beyond_end = event.end_date + datetime.timedelta(weeks=1)
+        self.assertTrue(event.end_date in occurrence_dates)
+        self.assertFalse(beyond_end in occurrence_dates)
+
+    def test_generate_event_occurrences_with_far_future_event_end_date_generates_only_up_to_eight_weeks(self):
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        event = Event.objects.get(pk=1)
+        event.day, created = Day.objects.get_or_create(day=yesterday.weekday())
+        event.start_date = yesterday
+        far_date = yesterday + datetime.timedelta(weeks=50)
+        event.end_date = far_date
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        self.assertTrue(generated, 8)
+
+    def test_generate_event_occurrences_deletes_previously_created_occurrences_outside_of_end_date_if_end_date_is_entered(self):
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        event = Event.objects.get(pk=1)
+        event.day, created = Day.objects.get_or_create(day=yesterday.weekday())
+        event.start_date = yesterday
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        original_dates = [event.date for event in EventOccurrence.objects.all()]
+        four_weeks_out = yesterday + datetime.timedelta(weeks=4)
+        event.end_date = four_weeks_out
+        event.save()
+        event.refresh_from_db()
+        generated = event.generate_event_occurrences()
+        new_dates = [event.date for event in EventOccurrence.objects.all()]
+        five_weeks_out = yesterday + datetime.timedelta(weeks=5)
+        self.assertTrue(five_weeks_out in original_dates)
+        self.assertFalse(five_weeks_out in new_dates)
+
+    def test_find_closest_date_with_day_past(self):
+        test_date = datetime.date(2019, 8, 22) # Thur
+        test_day_int = 0 # Mon
+        date = find_closest_date(test_date, test_day_int)
+        target_date = datetime.date(2019, 8, 26)
+        self.assertEqual(date, target_date)
+
+    def test_find_closest_date_with_day_future(self):
+        test_date = datetime.date(2019, 8, 22) # Thur
+        test_day_int = 4 # Fri
+        date = find_closest_date(test_date, test_day_int)
+        target_date = datetime.date(2019, 8, 23)
+        self.assertEqual(date, target_date)
+
+    def test_find_closest_date_with_same_day(self):
+        test_date = datetime.date(2019, 8, 22) # Thur
+        test_day_int = 3 # Thur
+        date = find_closest_date(test_date, test_day_int)
+        target_date = datetime.date(2019, 8, 29)
+        self.assertEqual(date, target_date)
 
 @override_settings(MEDIA_ROOT='temp_event_image_files')
 class EventImageModelTest(TestCase):

@@ -48,6 +48,12 @@ def compare_day_and_date(self, day, date, name):
         raise ValidationError(
             _('Please specify the day of the week.'), code='invalid')
 
+def find_closest_date(date, weekday_int): # 0=Mon, 1=Tue...
+    days_ahead = weekday_int - date.weekday()
+    if days_ahead <= 0:
+        days_ahead += 7
+    return date + datetime.timedelta(days = days_ahead)
+
 class Day(models.Model):
 
     MON = 0
@@ -165,6 +171,41 @@ class Event(models.Model):
             self.status = 'E'
         elif self.start_date and self.start_date < datetime.date.today():
             self.status = 'A'
+
+    def generate_event_occurrences(self, weeks=8):
+        generated = 0
+        if self.start_date:
+            today = datetime.date.today()
+            closest_date = find_closest_date(today, self.day.day)
+            if closest_date < self.start_date:
+                break_point = self.start_date
+            else:
+                break_point = closest_date
+            last_occurrence_date = closest_date + datetime.timedelta(weeks=weeks-1)
+            if self.end_date and self.end_date >= today:
+                if self.end_date < closest_date:
+                    break_point = self.end_date
+                if last_occurrence_date > self.end_date:
+                    while last_occurrence_date > self.end_date:
+                        if EventOccurrence.objects.filter(
+                                event=self, day=self.day, time=self.time,
+                                date=last_occurrence_date).exists():
+                            EventOccurrence.objects.filter(
+                                event=self, day=self.day, time=self.time,
+                                date=last_occurrence_date).delete()
+                        last_occurrence_date -= datetime.timedelta(weeks=1)
+            elif self.end_date and self.end_date < today:
+                return 0
+            while last_occurrence_date >= break_point:
+                if not EventOccurrence.objects.filter(
+                    event=self, day=self.day, time=self.time, host=self.host,
+                    date=last_occurrence_date).exists():
+                    EventOccurrence.objects.create(
+                        event=self, day=self.day, time=self.time, host=self.host,
+                        date=last_occurrence_date)
+                    generated += 1
+                last_occurrence_date -= datetime.timedelta(weeks=1)
+        return generated
 
 class EventImage(models.Model):
     event = models.ForeignKey(
