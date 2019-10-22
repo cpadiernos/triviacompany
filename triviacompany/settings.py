@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'locations.apps.LocationsConfig',
     'schedule.apps.ScheduleConfig',
     'accounting.apps.AccountingConfig',
+    'questions.apps.QuestionsConfig',
     'localflavor',
     'phone_field',
     'django_filters',
@@ -140,6 +141,9 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'triviacompany/media')
+
+PRIVATE_STORAGE_URL = '/private/media/'
+PRIVATE_STORAGE_ROOT = os.path.join(BASE_DIR, 'triviacompany/private/media')
 
 LOGIN_REDIRECT_URL = '/portal-redirect/'
 

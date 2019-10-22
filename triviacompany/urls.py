@@ -31,6 +31,7 @@ urlpatterns = [
     path('venues/', include('locations.urls')),
     path('', include('schedule.urls')),
     path('', include('accounting.urls')),
+    path('', include('questions.urls')),
 ]
 
 urlpatterns += static(
