@@ -47,7 +47,7 @@
   </noscript>
 
     <nav class="navbar navbar-expand-sm">
-      <a class="navbar-brand" href="">Trivia City</a>
+      <a class="navbar-brand" href="{% url 'home' %}">Trivia City</a>
       <div>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation" id="toggle-navbar">
       Show Menu <i class="fa fa-caret-down"></i>
@@ -116,11 +116,7 @@
             <a class="nav-link" href="{% url 'host-profile-list' %}">Meet The Hosts</a>
           </li>
         </ul>
-        <div class="ml-auto">
-          <a class="btn btn-outline-secondary" href="{% url 'login' %}">Log In</a>
-          <a class="btn btn-primary" href="">Sign Up</a>
       {% endif %}
-      </div>
     </nav>
     <div class='jumbotron jumbotron-image'>
     </div>

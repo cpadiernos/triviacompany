@@ -1,8 +1,30 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
 
-from triviacompany.views import about, how_to_play, portal_redirect
+from triviacompany.views import home, about, how_to_play, portal_redirect
 from accounts.models import CustomUser
+
+class HomeViewTests(TestCase):
+
+    def test_no_url_maps_to_home_name(self):
+        url = '/'
+        reversed_name = reverse('home')
+        self.assertEqual(url, reversed_name)
+
+    def test_reverse_home_name_resolves_to_home_view(self):
+        view = resolve(reverse('home'))
+        self.assertEqual(view.func, home)
+
+    def test_reverse_home_name_success_status_code(self):
+        url = reverse('home')
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_reverse_home_name_redirects_to_public_events_page(self):
+        url = reverse('home')
+        response = self.client.get(url)
+        redirect_url = reverse('event-occurrence-list')
+        self.assertRedirects(response, redirect_url)
 
 class AboutViewTests(TestCase):
 

@@ -2,6 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+def home(request):
+    return redirect('event-occurrence-list')
+
 def about(request):
     return render(request, 'about.html')
 

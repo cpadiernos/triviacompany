@@ -21,14 +21,15 @@ from django.urls import path, include
 from . import views 
 
 urlpatterns = [
+    path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('about/', views.about, name='about'),
     path('how-to-play/', views.how_to_play, name='how-to-play'),
     path('portal-redirect/', views.portal_redirect, name='portal-redirect'),
     path('', include('accounts.urls')),
     path('', include('django.contrib.auth.urls')),
-    path('policies/', include('policies.urls')),
-    path('venues/', include('locations.urls')),
+    path('', include('policies.urls')),
+    path('', include('locations.urls')),
     path('', include('schedule.urls')),
     path('', include('accounting.urls')),
     path('', include('questions.urls')),
