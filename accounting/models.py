@@ -216,8 +216,7 @@ class EventOccurrencePayment(models.Model):
         if not self.paid:
             if self.type == 'R' and self.event_occurrence.is_complete:
                 self.calculate_pay()
-            if self.event_occurrence.event.start_date\
-                == self.event_occurrence.event.end_date:
+            if self.event_occurrence.event.is_private == True:
                     self.type = 'P'
                     self.gross_amount = private_event_pay
             if self.pk:

@@ -175,6 +175,15 @@ class EventModelTest(TestCase):
         field_label = event._meta.get_field('end_date').verbose_name
         self.assertEqual(field_label, 'end date')
         
+    def test_is_private_label(self):
+        event = Event.objects.get(pk=1)
+        field_label = event._meta.get_field('is_private').verbose_name
+        self.assertEqual(field_label, 'private')
+        
+    def test_is_private_default_false(self):
+        event = Event.objects.get(pk=1)
+        self.assertIs(event.is_private, False)
+        
     def test_first_place_prize_label(self):
         event = Event.objects.get(pk=1)
         field_label = event._meta.get_field('first_place_prize').verbose_name

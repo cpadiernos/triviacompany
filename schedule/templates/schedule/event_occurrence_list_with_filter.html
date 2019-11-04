@@ -52,6 +52,7 @@ While we try to stay up to date, changes from the venue may occur last minute.</
   </thead>
   <tbody>
   {% for event_occurrence in filter.qs %}
+    {% if not event_occurrence.event.is_private %}
     <tr>
       <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.day }}</td>
       <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.date }}</td>
@@ -69,6 +70,7 @@ While we try to stay up to date, changes from the venue may occur last minute.</
       <td>{{ event_occurrence.event.venue.phone_number }}</td>
       <td><a href="{{event_occurrence.event.get_absolute_url}}">Details</a></td>
     </tr>
+    {% endif %}
   {% endfor %}
   </tbody>
 </table>

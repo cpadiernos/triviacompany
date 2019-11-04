@@ -30,14 +30,15 @@ class EventImageInline(admin.TabularInline):
 
 class EventAdmin(admin.ModelAdmin):
     list_display = (
-        'venue', 'host', 'day', 'time', 'start_date', 'end_date', 'status',
+        'venue', 'host', 'day', 'time', 'start_date', 'end_date', 
+        'is_private', 'status',
         'request_future_restart', 'base_teams', 'base_rate',
         'incremental_teams', 'incremental_rate')
     fieldsets = (
         (None, {
             'fields': (
                 'venue', 'host', 'day', 'time', 'start_date', 'end_date',
-                'status', 'request_future_restart')
+                'is_private', 'status', 'request_future_restart')
         }),
         ('Prizes', {
             'fields': (

@@ -807,9 +807,9 @@ class EventOccurrencePaymentModelTest(TestCase):
         self.assertEqual(occurrence_payment.gross_amount, original)
         self.assertEqual(occurrence_payment.submission_date, original_submission)
 
-    def test_clean_same_day_event_assigns_payment_as_private_event_pay_and_payment_type_p(self):
+    def test_clean_private_event_assigns_payment_as_private_event_pay_and_payment_type_p(self):
         occurrence = EventOccurrence.objects.get(pk=1)
-        occurrence.event.start_date = occurrence.event.end_date
+        occurrence.event.is_private = True
         occurrence.event.save()
         occurrence.save()
         occurrence_payment = EventOccurrencePayment.objects.get(event_occurrence=occurrence)

@@ -122,7 +122,19 @@ class EventOccurrenceListViewTests(TestCase):
         self.assertContains(response, f' {day_after_today.day}, {day_after_today.year}')
         self.assertContains(response, f' {today.day}, {today.year}')
         self.assertNotContains(response, f' {day_before_today.day}, {day_before_today.year}')
-    
+
+    def test_reverse_event_occurrence_list_name_does_not_show_private_event_occurrences(self):
+        today = datetime.date.today()
+        
+        venue = Venue.objects.create(name='The Meatballery')
+        event = Event.objects.create(venue=venue, is_private=True)
+        occurrence_today = EventOccurrence.objects.create(
+            event=event, date=today)
+            
+        url = reverse('event-occurrence-list')
+        response = self.client.get(url)
+        self.assertNotContains(response, 'The Meatballery')
+
     def test_reverse_event_occurrence_list_name_contains_link_to_event_detail_name(self):
         venue = Venue.objects.create(name='The Meatballery')
         event = Event.objects.create(venue=venue)

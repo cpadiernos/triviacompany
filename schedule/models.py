@@ -108,6 +108,7 @@ class Event(models.Model):
         blank=True, related_name='events')
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
+    is_private = models.BooleanField('private', default=False)
     first_place_prize = models.CharField(max_length=50, blank=True)
     second_place_prize = models.CharField(max_length=50, blank=True)
     third_place_prize = models.CharField(max_length=50, blank=True)
