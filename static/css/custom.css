@@ -13,17 +13,18 @@ nav {
 
 .jumbotron-image {
   background-image: url("../img/cartoon_city_banner.png");
+  background-repeat: repeat round;
 }
 
 .jumbotron {
-  height: 250px;
+  max-width: 100%;
 }
 
 h1 {
-  font-size: 32px !important;
+  font-size: 26px !important;
 }
 
 h2 {
 
-  font-size: 24px !important;
+  font-size: 20px !important;
 }

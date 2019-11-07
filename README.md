@@ -83,7 +83,7 @@ Emcee site:
 * Real time schedule updates
 * Request off and pick up shift functionality
 * Time triggered game info submission forms
-* Automatic pay calculation and paystub assignment
+* Automatic pay calculation and pay stub assignment
 * Reimbursement request forms, real time approval notice and pay stub assignment
 * Real time policy & procedures updates
 * Account update, password reset functionality
