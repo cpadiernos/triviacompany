@@ -125,3 +125,7 @@ dmypy.json
 # SQLite database files
 
 *.sqlite3
+
+# User uploaded files
+private/media
+media

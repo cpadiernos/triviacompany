@@ -144,6 +144,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'triviacompany/media')
 
 PRIVATE_STORAGE_URL = '/private/media/'
 PRIVATE_STORAGE_ROOT = os.path.join(BASE_DIR, 'triviacompany/private/media')
+PRIVATE_MEDIA_USE_XSENDFILE = config('PRIVATE_MEDIA_USE_XSENDFILE', default=False, cast=bool)
 
 LOGIN_REDIRECT_URL = '/portal-redirect/'
 
@@ -151,4 +152,12 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 LOGIN_URL = '/login/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+
+DEFAULT_FROM_EMAIL = 'Trivia City <noreply@triviacityevents.com>'
+EMAIL_SUBJECT_PREFIX = '[Trivia City]'
