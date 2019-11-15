@@ -9,15 +9,15 @@
 <form method="get" novalidate id="searchForm" city-dropdown-url="{% url 'city-dropdown-list' %}" day-dropdown-url="{% url 'day-dropdown-list' %}">
   <div class="container p-0">
     <div class="row">
-      <div class="form-group col-sm-3">
+      <div class="form-group col-md-3">
         {{ filter.form.event__venue__state.label_tag }}
         {% render_field filter.form.event__venue__state class="form-control" %}
       </div>
-      <div class="form-group col-sm-3">
+      <div class="form-group col-md-3">
         {{ filter.form.event__venue__city.label_tag }}
         {% render_field filter.form.event__venue__city class="form-control" %}
       </div>
-      <div class="form-group col-sm-3">
+      <div class="form-group col-md-3">
         {{ filter.form.day.label_tag }}
         {% render_field filter.form.day class="form-control" %}
       </div>
@@ -30,51 +30,50 @@
 </form>
 
 {% if filter.qs %}
-
 <p>* indicates a day change or time change from the normal schedule. 
 While we try to stay up to date, changes from the venue may occur last minute.</p>
-
-<table class="table">
-  <thead>
-    <tr>
-      <th>Day</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th>Status</th>
-      <th>Venue</th>
-      <th>Address</th>
-      <th>City</th>
-      <th>State</th>
-      <th>Zip</th>
-      <th>Phone</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for event_occurrence in filter.qs %}
-    {% if not event_occurrence.event.is_private %}
-    <tr>
-      <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.day }}</td>
-      <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.date }}</td>
-      <td>{% if event_occurrence.is_different_time %}*{% endif %}{{ event_occurrence.time}}</td>
-      <td>{{ event_occurrence.status }}</td>
-      <td>{{ event_occurrence.event.venue }}</td>
-      <td>
-        <a href="{{ event_occurrence.event.venue.map_link }}">
-          {{ event_occurrence.event.venue.address }}
-        </a>
-      </td>
-      <td>{{ event_occurrence.event.venue.city.name }}</td>
-      <td>{{ event_occurrence.event.venue.state.name }}</td>
-      <td>{{ event_occurrence.event.venue.zip.code }}</td>
-      <td>{{ event_occurrence.event.venue.phone_number }}</td>
-      <td><a href="{{event_occurrence.event.get_absolute_url}}">Details</a></td>
-    </tr>
-    {% endif %}
-  {% endfor %}
-  </tbody>
-</table>
-
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Venue</th>
+        <th>Address</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zip</th>
+        <th>Phone</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for event_occurrence in filter.qs %}
+      {% if not event_occurrence.event.is_private %}
+      <tr>
+        <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.day }}</td>
+        <td>{% if event_occurrence.is_different_day %}*{% endif %}{{ event_occurrence.date }}</td>
+        <td>{% if event_occurrence.is_different_time %}*{% endif %}{{ event_occurrence.time}}</td>
+        <td>{{ event_occurrence.status }}</td>
+        <td>{{ event_occurrence.event.venue }}</td>
+        <td>
+          <a href="{{ event_occurrence.event.venue.map_link }}">
+            {{ event_occurrence.event.venue.address }}
+          </a>
+        </td>
+        <td>{{ event_occurrence.event.venue.city.name }}</td>
+        <td>{{ event_occurrence.event.venue.state.name }}</td>
+        <td>{{ event_occurrence.event.venue.zip.code }}</td>
+        <td>{{ event_occurrence.event.venue.phone_number }}</td>
+        <td><a href="{{event_occurrence.event.get_absolute_url}}">Details</a></td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% else %}
 
 <p>There are no events.</p>

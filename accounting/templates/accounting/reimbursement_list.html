@@ -4,12 +4,13 @@
 
 {% block content %}
 
-<div class="d-flex flex-row justify-content-between mb-3">
+<div class="d-sm-flex flex-row justify-content-between mb-3">
   <div><h1>Reimbursements</h1></div>
   <div class="align-self-center"><a href="{% url 'reimbursement-create' %}" class="btn btn-success"><i class="fa fa-plus"></i> Add Request</a></div>
 </div>
 
 {% if reimbursement_list %}
+<div class="table-responsive">
   <table class="table">
     <thead class="thead-light">
       <tr>
@@ -43,7 +44,7 @@
     {% endfor %}
     </tbody>
   </table>
-
+</div>
 {% else %}
   <p class="p-3">You have no reimbursements.</p>
 {% endif %}

@@ -68,7 +68,7 @@ python manage.py runserver
 To view public site, go to http://127.0.0.1:8000/
 To view the emcee site, go to http://127.0.0.1:8000/login
 
-Demo at [Trivia City]()
+Demo at [Trivia City](https://triviacityevents.com)
 
 ## Features
 Public site:

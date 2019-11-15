@@ -17,6 +17,7 @@
 </ul>
 
 {% if pay_stub_list %}
+<div class="table-responsive">
   <table class="table">
     <thead class="thead-light">
       <tr>
@@ -39,7 +40,7 @@
     {% endfor %}
     </tbody>
   </table>
-
+</div>
 {% else %}
   <p class="p-3">You have no paystubs for this period.</p>
 {% endif %}

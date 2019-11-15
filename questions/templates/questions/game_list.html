@@ -7,21 +7,21 @@
 
 <h2>Games</h2>
 {% if game_list_future %}
-  <div class='table-responsive'>
+  <div class="table-responsive">
     <table class="table">
       <thead>
-        <tr class="d-flex">
-          <th class="col-2">Date</th>
-          <th class="col-3">Question Set</th>
-          <th class="col-3">Worksheet/Audio</th>
-          <th class="col-4">Notes</th>
+        <tr>
+          <th style="width:15%">Date</th>
+          <th style="width:25%">Question Set</th>
+          <th style="width:25%">Worksheet</th>
+          <th>Notes</th>
         </tr>
       </thead>
       <tbody>
         {% for game in game_list_future %}
-        <tr class="d-flex">
-          <td class="col-2">{{ game.date }}</td>
-          <td class="col-3 text-truncate">
+        <tr>
+          <td>{{ game.date }}</td>
+          <td>
             {% if game.question_set %}
               <a href="{{ game.question_set.url }}" download="{{ game.question_set.url }}">
                 <i class="fa fa-download"></i> {{ game.question_set_filename }}
@@ -30,7 +30,7 @@
               -
             {% endif %}
           </td>
-          <td class="col-3 text-truncate">
+          <td>
             {% if game.worksheet %}
               <a href="{{ game.worksheet.url }}" download="{{ game.worksheet.url }}">
                 <i class="fa fa-download"></i> {{ game.worksheet_filename }}
@@ -39,7 +39,7 @@
               -
             {% endif %}
           </td>
-          <td class="col-4">{{ game.notes }}</td>
+          <td>{{ game.notes }}</td>
         </tr>
         {% endfor %}
       </tbody>
