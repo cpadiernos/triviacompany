@@ -43,32 +43,41 @@ To run the project on your local machine:
 git clone https://github.com/cpadiernos/triviacompany.git
 ```
 
-2. Install the requirments:
+2. Create a virtual environment and activate it.
+
+3. Install the requirments:
 ```
-pip install -r requirements.txt
+pip install -r triviacompany/requirements.txt
 ```
 
-3. Create the database:
+4. Go into triviacompany folder:
+```
+cd triviacompany
+```
+
+5. Rename the ".env.example" file to ".env".
+
+6. Create the database:
 ```
 python manage.py migrate
 ```
 
-4. Create the user for the admin site:
+7. Create the user for the admin site:
 ```
 python manage.py createsuperuser
 ```
 
-4. Run the development server:
+8. Run the development server:
 ```
 python manage.py runserver
 ```
 
-5. Navigate to http://127.0.0.1:8000/admin and enter the information of the superuser you created earlier. Then fill in relevant information including users, venues, and events.
+9. Navigate to http://127.0.0.1:8000/admin and enter the information of the superuser you created earlier. Then fill in relevant information including users, venues, and events.
 
 To view public site, go to http://127.0.0.1:8000/
 To view the emcee site, go to http://127.0.0.1:8000/login
 
-Demo at [Trivia City](https://triviacityevents.com)
+Demo at [www.triviacityevents.com](https://triviacityevents.com)
 
 ## Features
 Public site:
@@ -119,4 +128,4 @@ Features will be added regularly.
 As a former trivia emcee and then trivia company manager, I thought this would be a great tool to streamline the entire process.
 
 ## Contact
-Created by [@cpadiernos](). Feel free to reach out!
+Created by [@cpadiernos](https://www.linkedin.com/in/carolpadiernos/). Feel free to reach out!
