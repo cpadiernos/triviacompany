@@ -249,19 +249,32 @@ class EventOccurrencePayment(models.Model):
             self.gross_amount = host.base_rate
 
     def display_event_date(self):
-        return self.event_occurrence.date
+        if self.event_occurrence:
+            return self.event_occurrence.date
+        else:
+            return '-'
     display_event_date.short_description = 'Occurrence Date'
     
     def display_event(self):
-        return self.event_occurrence.event
+        if self.event_occurrence:
+            return self.event_occurrence.event
+        else:
+            return '-'
+
     display_event.short_description = 'Event'
     
     def display_host(self):
-        return self.event_occurrence.host
+        if self.event_occurrence:
+            return self.event_occurrence.host
+        return '-'
+
     display_host.short_description = 'Host'
     
     def display_number_of_teams(self):
-        return self.event_occurrence.number_of_teams
+        if self.event_occurrence:
+            return self.event_occurrence.number_of_teams
+        return '-'
+
     display_number_of_teams.short_description = 'Number of Teams'
 
 class Reimbursement(models.Model):

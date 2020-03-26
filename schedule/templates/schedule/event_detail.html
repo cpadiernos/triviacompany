@@ -24,7 +24,7 @@
     </div>
     <div class="col-sm col-md-6">
       {% for image in event.images.all %}
-      <p><img src="{{ image.image.url }}" alt=''></p>
+      <p><img class="img-fluid" src="{{ image.image.url }}" alt="{{image.image}}"></p>
       {% empty %}
       <p>Images coming soon!</p>
       {% endfor %}

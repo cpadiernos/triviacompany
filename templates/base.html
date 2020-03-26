@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Trivia City{% endblock %}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Archivo+Black">
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <link rel="stylesheet" href="{% static 'css/jquery-clockpicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css" />
     <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'js/popper.min.js' %}"></script>
@@ -47,7 +47,7 @@
   </noscript>
 
     <nav class="navbar navbar-expand-sm">
-      <a class="navbar-brand" href="{% url 'home' %}">Trivia City</a>
+      <a class="navbar-brand" href="{% url 'home' %}"><h1>Trivia City</h1></a>
       <div>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation" id="toggle-navbar">
       <i class="fa fa-bars"></i>
@@ -118,9 +118,10 @@
         </ul>
       {% endif %}
     </nav>
-    <div class='jumbotron jumbotron-image'>
+    <div class='jumbotron jumbotron-image jumbotron-fluid text-center'>
+      <h1 class="jumbotron-message container rounded py-2 text-white">Welcome to Trivia City!</h1>
     </div>
-    <div class="container">
+    <div class="container p-4 rounded bg-white border">
       {% block content %}
       {% endblock %}
     </div>

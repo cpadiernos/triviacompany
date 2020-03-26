@@ -7,29 +7,35 @@ nav a{
 }
 
 nav {
-  background-color: white;
-  opacity: 0.85;
+  background-color: #e9ecef;
+}
+
+body {
+  background-color: #93a4b5;
 }
 
 .jumbotron-image {
   background-image: url("../img/cartoon_city_banner.png");
   background-repeat: repeat round;
+  background-color:#e9ecef;
 }
 
-.jumbotron {
-  max-width: 100%;
+.jumbotron-message {
+  font-size: 2.7rem;
+  background-color: #1cb57c;
+  border: 2px solid white;
 }
 
 h1 {
-  font-size: 1.6rem !important;
+  font-size: 1.6rem;
 }
 
 h2 {
-  font-size: 1.0rem !important;
+  font-size: 1.0rem;
 }
 
 @media (max-width: 370px) {
   .nav-tabs .nav-link{
-    padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0.5rem;
   }
 }
